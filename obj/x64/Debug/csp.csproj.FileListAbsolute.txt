@@ -1,0 +1,2 @@
+C:\Users\17120\Desktop\csp\csp\bin\x64\Debug\csp.exe.config
+C:\Users\17120\Desktop\csp\csp\obj\x64\Debug\csp.csprojResolveAssemblyReference.cache
