@@ -106,13 +106,17 @@ namespace CG_CSP_1440
             get { return lengthofRoute; }
             set { lengthofRoute = value; }
         }
-        private int typeofWork;//身份信息 0-乘务员，1-乘务长
+        private int typeofWork;
+        /// <summary>身份信息 0-乘务员，1-乘务长                
+        /// <summary>
         public int TypeofWork
         {
             get { return typeofWork; }
             set { typeofWork = value; }
         } 
-        private int typeofWorkorRest;//作休类型 0-作，1-休
+        private int typeofWorkorRest;
+        /// <summary>作休类型 1-作，0-休    
+        /// <summary>
         public int TypeofWorkorRest
         {
             get { return typeofWorkorRest; }
@@ -125,9 +129,10 @@ namespace CG_CSP_1440
             get { return routingID; }
             set { routingID = value; }
         }
-        
-       
-        private int typeofLeave;//是否请假 0-是，1-否
+               
+        private int typeofLeave;
+        /// <summary>是否请假 0-是，1-否
+        /// <summary>
         public int TypeofLeave  
         {
             get { return typeofLeave; }

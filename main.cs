@@ -39,7 +39,7 @@ namespace CG_CSP_1440
             Console.WriteLine("init solution spend time:{0} s ", sw.Elapsed.TotalSeconds);
 
             /*********<<下面开始测试CG>>***************************************************************************/
-            CSP csp = new CSP(Net,40,10);
+            CSP csp = new CSP(Net,2, 1);
             csp.Branch_and_Price(IS);           
             
         }
@@ -131,7 +131,7 @@ namespace CG_CSP_1440
         {
             double start_time = 0, end_time = 0;
             int num_external_days = 0;
-
+            string status = "";
             foreach (Arc arc in path.Arcs)
             {
                 switch (arc.ArcType)///弧的类型：1-接续弧，2-出乘弧，3-退乘弧, 20-虚拟起点弧，30-虚拟终点弧
@@ -141,7 +141,8 @@ namespace CG_CSP_1440
                         pathStr.AppendFormat("{0}属于{1}号交路,其工作链是", arc.D_Point.Name, arc.D_Point.RoutingID);
                         break;
                     case 1:
-                        pathStr.AppendFormat("({0}, {1})", arc.D_Point.Name ,arc.D_Point.TypeofWorkorRest, "→");
+                        status = arc.D_Point.TypeofWorkorRest == 1 ? "作" : "息";
+                        pathStr.AppendFormat("({0}, {1})", arc.D_Point.Name , status, "→");
                         summary.totalConnect += arc.Cost;
                         break;
                     

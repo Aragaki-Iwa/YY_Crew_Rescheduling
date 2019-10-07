@@ -97,6 +97,13 @@ namespace CG_CSP_1440
             //    }
             //}
             //也按拓扑顺序否？？
+
+            for (i = 0; i < LineList.Count; i++) {
+                if (LineList[i].TypeofLeave == 0) {
+                    LineList.RemoveAt(i);
+                    i--;
+                }
+            }
             while (LineList.Count > 0) 
             //while (LineIDList.Count > 0)
             {
@@ -332,7 +339,7 @@ namespace CG_CSP_1440
 
         /// <summary>
         /// 初始化A_Matrix和Coefs
-        /// A_Matrix[j][i]表示工作链j第i天值乘哪一条交路，若第i天休息，则赋值为0
+        /// A_Matrix[j][i]表示工作链j第i天值乘哪一条交路，若第i天休息，则赋值为0 //TODO:20191006这里或许有问题，涉及到替班
         /// </summary>       
         private void PrepareInputForRMP_YY(/*List<Node> TripList*/) {
             //Get Coef in FindAllPaths
@@ -530,9 +537,10 @@ namespace CG_CSP_1440
                         Arc arc = trip1.In_Edges[i];
                         trip2 = arc.O_Point;
 
-                        if (trip2.Name == "赵1" && trip2.RoutingID == 0)
+                        if (trip2.CrewID == trip2.CrewID && (trip2.TypeofLeave == 0 || trip1.TypeofLeave == 0)) 
                         {
-                            int rr = 0;
+                            //若属于一个人，且其中一个点为请假，则不可延伸
+                            continue;                        
                         }
 
                         for (j = 0; j < trip1.LabelsBackward.Count; j++)

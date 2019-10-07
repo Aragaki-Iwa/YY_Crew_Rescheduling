@@ -184,11 +184,19 @@ namespace CG_CSP_1440//crewbase可以直接把文件里的内容删除，在这�
                         trip2 = TripList[j];
                         //Console.Write("trip2: name: {0}, work type{1} \n \n", trip1.Name, trip1.TypeofWorkorRest);
 
+                        // 请假
+                        if (trip3.TypeofLeave == 0)
+                        {
+                            if (j == i + 1)
+                            {
+                                continue;
+                            }
+                        }
 
                         if (trip1.LengthofRoute == trip2.LengthofRoute
                             &&(trip1.DayofRoute + 1 == trip2.DayofRoute)
-                            && (trip1.TypeofWork == trip2.TypeofWork || trip1.TypeofWork > trip2.TypeofWork)
-                            && (trip3.TypeofWorkorRest != trip1.TypeofWorkorRest || trip1.Name == trip2.Name))  //1,2所属的交路长度相同
+                            && (trip1.TypeofWork >= trip2.TypeofWork /*|| trip1.TypeofWork > trip2.TypeofWork*/)
+                            && (trip3.TypeofWorkorRest != trip2.TypeofWorkorRest || trip1.Name == trip2.Name))  //1,2所属的交路长度相同
                         {
 
                             Arc arc = new Arc();           //这里就是建立接续弧
@@ -230,10 +238,13 @@ namespace CG_CSP_1440//crewbase可以直接把文件里的内容删除，在这�
                             trip1.Out_Edges.Add(arc);
                             trip2.In_Edges.Add(arc);
 
-                            //Console.Write("connected!! <trip1: name: {0}, work type{1}>," +
-                            //                            "<trip2: name: {2}, work type{3}> \n", 
-                            //                            trip1.Name, trip1.TypeofWorkorRest,
-                            //                            trip2.Name, trip2.TypeofWorkorRest);
+                            Console.Write("arc:<{0}, {1}>", trip1.ID, trip2.ID);
+                            Console.Write("connected!! <trip1_{0}: name: {1}, work type {2}>," +
+                                                        "<trip2_{3}: name: {4}, work type {5}> " +
+                                                        "<teip3_{6}: name:{7}, 是否请假 {8}>\n",
+                                                        trip1.ID,trip1.Name, trip1.TypeofWorkorRest,
+                                                        trip2.ID,trip2.Name, trip2.TypeofWorkorRest,
+                                                        trip3.ID,trip3.Name, trip3.TypeofLeave);
 
                             #region pre version
 
@@ -353,6 +364,7 @@ namespace CG_CSP_1440//crewbase可以直接把文件里的内容删除，在这�
             #endregion
             //删去出度或入度为0的点与弧
             DeleteUnreachableNodeandEdge(ref TripList);            
+            
         }
         #region
         //bool Transferable(Node trip1, Node trip2, int length)//在这里定义接续规则
@@ -494,7 +506,7 @@ namespace CG_CSP_1440//crewbase可以直接把文件里的内容删除，在这�
             //return unCoveredTrips;
         }
         void OutUncoveredTrips(List<int> unCoveredTrip) {
-            Console.WriteLine("uncovered trips: ");
+            Console.WriteLine("uncovered trips id: ");
             foreach (int trip in unCoveredTrip) {
                 Console.Write(trip + ", ");
             }
