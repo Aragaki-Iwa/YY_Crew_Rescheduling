@@ -52,6 +52,36 @@ namespace CG_CSP_1440//crewbase可以直接把文件里的内容删除，在这�
         public Dictionary<int, List<int>> RouteID_TripIDs_Map;//20191005
         public Dictionary<int, List<int>> Day_TripIDs_Map;
 
+        /// <summary>
+        /// crewID与其对应的workVector的映射
+        /// </summary>
+        public Dictionary<int, int[]> crewIDToWorkVec_Map;
+        /// <summary>
+        /// 20191009
+        /// </summary>
+        private void init_CrewIDToWorkVec_map() {
+            crewIDToWorkVec_Map = new Dictionary<int, int[]>();
+            for (int i = 0; i < TripList.Count;)
+            {
+                int id = TripList[i].CrewID;
+                if (!crewIDToWorkVec_Map.ContainsKey(id)) {
+                    crewIDToWorkVec_Map.Add(id, new int[5]);                    
+                }
+                else
+                {
+                    throw new Exception("ERROR: 当前节点非身份节点");
+                }
+                
+                i++;
+                int k = 0;
+                int[] workVer = new int[5];
+                while (k < 5) {                    
+                    workVer[k++] = TripList[i++].TypeofWorkorRest;
+                }
+                crewIDToWorkVec_Map[id] = workVer;                
+            }
+        }
+
         public static int num_Physical_trip 
         {
             get { return num_physical_trip; }  
@@ -96,6 +126,10 @@ namespace CG_CSP_1440//crewbase可以直接把文件里的内容删除，在这�
             //建弧
             this.NodeSet = Data.NodeSet;
             this.TripList = Data.TripList;
+
+            // 20191009
+            init_CrewIDToWorkVec_map(); //test succeed
+            // end 20191009
 
             ArcSet = new List<Arc>();
             int i, j;
@@ -185,12 +219,22 @@ namespace CG_CSP_1440//crewbase可以直接把文件里的内容删除，在这�
                         //Console.Write("trip2: name: {0}, work type{1} \n \n", trip1.Name, trip1.TypeofWorkorRest);
 
                         // 请假
-                        if (trip3.TypeofLeave == 0)
-                        {
-                            if (j == i + 1)
-                            {
-                                continue;
-                            }
+                        //if (trip3.TypeofLeave == 0)
+                        //{
+                        //    if (j == i + 1)
+                        //    {
+                        //        continue;
+                        //    }
+                        //}
+
+                        // 请假 v2.0
+                        // 同一crew的节点，不允许请假节点有入弧
+                        if (trip2.TypeofLeave == 0 && trip1.CrewID == trip2.CrewID) {
+                            continue;
+                        }
+                        // 不同级别之间不得替班
+                        if (trip1.TypeofWork != trip2.TypeofWork) {
+                            continue;
                         }
 
                         if (trip1.LengthofRoute == trip2.LengthofRoute

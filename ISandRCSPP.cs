@@ -218,7 +218,10 @@ namespace CG_CSP_1440
                 }
                 loopPath.Arcs.Add(arc);
 
-                //loopPath.Coef *= pathday;
+                if (loopPath.Arcs.First().D_Point.DayofRoute != 0) {
+                    throw new Exception("ERROR：该path的第一条弧的末端点非身份节点");
+                }
+                loopPath.crewID = loopPath.Arcs.First().D_Point.CrewID; //赋值身份节点
             }
             if (loopPath.Arcs.Count == 0)
             {                                  
@@ -339,7 +342,7 @@ namespace CG_CSP_1440
 
         /// <summary>
         /// 初始化A_Matrix和Coefs
-        /// A_Matrix[j][i]表示工作链j第i天值乘哪一条交路，若第i天休息，则赋值为0 //TODO:20191006这里或许有问题，涉及到替班
+        /// A_Matrix[j][i]表示工作链j第i天值乘哪一条交路，若第i天休息，则赋值为0 //TODO:20191006这里或许有问题，涉及到替班 
         /// </summary>       
         private void PrepareInputForRMP_YY(/*List<Node> TripList*/) {
             //Get Coef in FindAllPaths
@@ -348,7 +351,9 @@ namespace CG_CSP_1440
             //ObjCoefs = new List<double>();
             int nb_of_day = 5;
             foreach (var path in PathSet)
-            {              
+            {
+                path.workVector = Net.crewIDToWorkVec_Map[path.crewID];
+
                 Coefs.Add(path.Coef);
              
                 int[] a = new int[nb_of_day];

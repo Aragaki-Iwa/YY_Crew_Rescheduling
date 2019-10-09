@@ -132,6 +132,17 @@ namespace CG_CSP_1440
             double start_time = 0, end_time = 0;
             int num_external_days = 0;
             string status = "";
+
+            pathStr.AppendFormat("{0}属于{1}号交路,其工作链是", path.Arcs.First().D_Point.Name, path.Arcs.First().D_Point.RoutingID);
+            for (int i = 1; i < path.Arcs.Count-1; i++)
+            {
+                Arc arc = path.Arcs[i];
+                status = arc.D_Point.TypeofWorkorRest == 1 ? "作" : "息";
+                pathStr.AppendFormat("({0}_{1}, {2})", arc.D_Point.Name, status, path.workVector[i-1], "→");
+                summary.totalConnect += arc.Cost;
+            }
+            #region //MyRegion
+            /*
             foreach (Arc arc in path.Arcs)
             {
                 switch (arc.ArcType)///弧的类型：1-接续弧，2-出乘弧，3-退乘弧, 20-虚拟起点弧，30-虚拟终点弧
@@ -142,7 +153,7 @@ namespace CG_CSP_1440
                         break;
                     case 1:
                         status = arc.D_Point.TypeofWorkorRest == 1 ? "作" : "息";
-                        pathStr.AppendFormat("({0}, {1})", arc.D_Point.Name , status, "→");
+                        pathStr.AppendFormat("({0}_{1}, {2})", arc.D_Point.Name , status, path.workVector[], "→");
                         summary.totalConnect += arc.Cost;
                         break;
                     
@@ -171,13 +182,14 @@ namespace CG_CSP_1440
                     default:
                         break;
                 }
-            }
+            }*/
+            #endregion
             //summary.totalLength = end_time - start_time;
             //summary.pureCrewTime = summary.totalLength - summary.totalConnect;
 
             //pathStr.AppendFormat(" 总长度 {0}\t纯乘务时间 {1}\t总接续时间 {2}\t外驻时间 {3}",
             //    summary.totalLength, summary.pureCrewTime, summary.totalConnect, summary.externalRest);
-            
+
             pathStr.AppendLine();
             
             return pathStr;

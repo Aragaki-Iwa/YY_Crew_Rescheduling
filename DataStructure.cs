@@ -7,10 +7,7 @@ using ILOG.CPLEX;
 
 namespace CG_CSP_1440
 {
-    //class DataStructure
-    //{
-
-    //}
+    
     public  class Label //标号
                                                           //复习一下标号法
     {
@@ -46,7 +43,14 @@ namespace CG_CSP_1440
         public double accumuwork;
 
         public int[] CoverMatrix;//2019-1-26               matrix模型
-        //public 
+        /// <summary>
+        /// 输入，每个crew固定，对应记录crew对应的计划工作状态，
+        /// </summary>
+        public int[] workVector;
+        /// <summary>
+        /// 该工作链属于哪个crew
+        /// </summary>
+        public int crewID;
 
     }
     public class Node
@@ -69,7 +73,10 @@ namespace CG_CSP_1440
             set { crewID = value; }
         }
 
-        private int dayofRoute;//交路所处天数 其中第0天代表这个点是一个身份节点
+        private int dayofRoute;
+        /// <summary>
+        /// 交路所处天数 其中第0天代表这个点是一个身份节点
+        /// </summary>
         public int DayofRoute
         {
             get { return dayofRoute; }
@@ -107,16 +114,18 @@ namespace CG_CSP_1440
             set { lengthofRoute = value; }
         }
         private int typeofWork;
-        /// <summary>身份信息 0-乘务员，1-乘务长                
         /// <summary>
+        /// 身份信息 0-乘务员，1-乘务长                
+        /// </summary>
         public int TypeofWork
         {
             get { return typeofWork; }
             set { typeofWork = value; }
         } 
         private int typeofWorkorRest;
-        /// <summary>作休类型 1-作，0-休    
         /// <summary>
+        /// 作休类型 1-作，0-休    
+        /// </summary>
         public int TypeofWorkorRest
         {
             get { return typeofWorkorRest; }
@@ -131,8 +140,9 @@ namespace CG_CSP_1440
         }
                
         private int typeofLeave;
-        /// <summary>是否请假 0-是，1-否
         /// <summary>
+        /// 是否请假 0-是，1-否
+        /// </summary>
         public int TypeofLeave  
         {
             get { return typeofLeave; }

@@ -82,6 +82,7 @@ namespace CG_CSP_1440
 
             sw.Stop();
             Console.WriteLine("根节点求解时间： " + sw.Elapsed.TotalSeconds);
+            Console.WriteLine("根节点目标值： " + root_node.obj_value);
 
             best_feasible_solution = new List<int>();                //最优解
             //RecordFeasibleSolution(root_node, ref best_feasible_solution);
@@ -93,6 +94,12 @@ namespace CG_CSP_1440
 
             //Branch_and_Bound(root_node , LB , UB);
             // 不分支定界了，转化为整数规划求解
+            IConversion mip = masterModel.Conversion(DvarSet.ToArray(), NumVarType.Int);
+            masterModel.Add(mip);
+            masterModel.Solve();
+            Console.WriteLine("RMP_BOJ:" + masterModel.GetObjValue());
+            RecordFeasibleSolution(ref best_feasible_solution);
+            WriteOptScheduleToFile();
 
             sw.Stop();
             Console.WriteLine("分支定价共花费时间：" + sw.Elapsed.TotalSeconds);
@@ -209,8 +216,11 @@ namespace CG_CSP_1440
                 Obj.Expr = masterModel.Sum(Obj.Expr, masterModel.Prod(CoefSet[j], DvarSet[j]));//后面的小括号里面是一个cij*xj，大括号里面的是累计，包括之前的expr
             }
 
-            //constraints            
-            for (i = 0; i < 5; i++)//对每一天
+            /*constraints*/
+
+            //ct:每条交路每条担当的人数满足要求
+            #region //该条约束不需要，因为输入已经决定了，只要有可行解，该条约束必然满足
+            /*for (i = 0; i < 5; i++)//对每一天
             {
                 INumExpr expr = masterModel.NumExpr();
                 Dictionary<int, List<int>> route_paths_map = new Dictionary<int, List<int>>();
@@ -239,12 +249,15 @@ namespace CG_CSP_1440
                     ct_nb.Add(Ct_crewNum[i][routePathsPair.Key - 1]);
                 }                
             } 
-            // 每个乘务员只能有一条工作链
+            */
+            #endregion
+            
+            // ct:每个乘务员只能有一条工作链
             Dictionary<int, List<int>> crewID_paths_map = new Dictionary<int, List<int>>();
             for (j=0; j<initialPath_num;j++) {
                 Pairing path = PathSet[j];
-                int crew_id = path.Arcs.First().D_Point.CrewID;
-                if (!crewID_paths_map.ContainsKey(crew_id)) { //Arcs.First.D是身份节点
+                int crew_id = path.crewID;
+                if (!crewID_paths_map.ContainsKey(crew_id)) { 
                     crewID_paths_map.Add(crew_id, new List<int>());
                 }
                 crewID_paths_map[crew_id].Add(j);
@@ -266,6 +279,24 @@ namespace CG_CSP_1440
         public void WriteModelToFIle(/*string modelFile*/) {
             string modelFile = "model.lp";
             masterModel.ExportModel(modelFile);
+        }
+        public void WriteOptScheduleToFile() {
+            string opt_soln_file = "opt_schdule.txt";
+            StreamWriter opt_solution = new StreamWriter(opt_soln_file);
+            Report repo = new Report();
+            int count = 0;
+            opt_solution.WriteLine("最优调整计划具体内容");
+            foreach (var id in best_feasible_solution)
+            {
+                opt_solution.WriteLine("crew工作链及其内容 " + (count++) + " ");
+                StringBuilder singlepath = new StringBuilder();
+                repo.summary_single.SetValue(0, 0, 0, 0);
+
+                opt_solution.Write(repo.translate_single_pairing(ColumnPool[id],
+                                        ref singlepath, ref repo.summary_single));
+                //opt_solution.WriteLine();
+            }
+            opt_solution.Close();
         }
 
 
@@ -500,10 +531,10 @@ namespace CG_CSP_1440
         }
 
         /// <summary>记录当前最优解
-        /// value = 1 的dvar
+        /// //记录可行解 value = 1 的dvar
         /// </summary>
         /// <param name="best_feasible_solution"></param>
-        void RecordFeasibleSolution(ref List<int> best_feasible_solution)//记录可行解
+        void RecordFeasibleSolution(ref List<int> best_feasible_solution)
         {
             best_feasible_solution.Clear();
             double value;
@@ -705,8 +736,10 @@ namespace CG_CSP_1440
             {
                 TripList[i * 6].Price = priceOfCrew[i];
             }
-            
+
             // ct of crew number
+            #region MyRegion
+            /*
             double[][] priceOfCtCrewNum = getDualsOfCtCrewNum();
             Dictionary<int, List<int>> routeID_tripIDs_map = Network.RouteID_TripIDs_Map;
             Dictionary<int, List<int>> day_tripIDs_map = Network.Day_TripIDs_Map;
@@ -721,6 +754,8 @@ namespace CG_CSP_1440
                     }
                 }
             }
+            */
+            #endregion
         }
 
         double[][] getDualsOfCtCrewNum() {
